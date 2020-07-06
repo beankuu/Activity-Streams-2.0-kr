@@ -165,7 +165,7 @@ The terms `displayName`, `verb`, `title` and `objectType` should be treated as r
 
 This specification describes a JSON-based [[RFC7159](https://www.w3.org/TR/activitystreams-core/#bib-RFC7159)] serialization syntax for the [Activity Vocabulary](https://www.w3.org/TR/activitystreams-vocabulary/) that conforms to a subset of [[JSON-LD](https://www.w3.org/TR/activitystreams-core/#bib-JSON-LD)] syntax constraints but does not require JSON-LD processing. While other serialization forms are possible, such alternatives are not discussed by this document.
 
-When serialized, absent properties are represented by either (a) setting the property value to null, or (b) by omitting the property declaration altogether at the option of the publisher. These representations are semantically equivalent. If a property has an array value, the absence of any items in that array MUST be represented by omitting the property entirely or by setting the value to null. The appropriate interpretation of an omitted or explicitly null value is that no value has been assigned as opposed to the view that the given value is empty or nil.
+When serialized, absent properties are represented by either (a) setting the property value to null, or (b) by omitting the property declaration altogether at the option of the publisher. These representations are semantically equivalent. If a property has an array value, the absence of any items in that array *MUST* be represented by omitting the property entirely or by setting the value to null. The appropriate interpretation of an omitted or explicitly null value is that no value has been assigned as opposed to the view that the given value is empty or nil.
 
 An **Activity Streams Document** is a JSON document whose root value is an Activity Streams [Object](https://www.w3.org/TR/activitystreams-core/#asobject) of any type, including a [Collection](https://www.w3.org/TR/activitystreams-core/#collection), and whose MIME media type is " `application/activity+json`".
 
@@ -249,7 +249,8 @@ When a JSON-LD enabled Activity Streams 2.0 implementation encounters a JSON doc
 This specification uses IRIs [[RFC3987](https://www.w3.org/TR/activitystreams-core/#bib-RFC3987)]. Every URI [[RFC3986](https://www.w3.org/TR/activitystreams-core/#bib-RFC3986)] is also an IRI, so a URI may be used wherever an IRI is named. There are two special considerations: (1) when an IRI that is not also a URI is given for dereferencing, it *MUST* be mapped to a URI using the steps in Section 3.1 of [[RFC3987](https://www.w3.org/TR/activitystreams-core/#bib-RFC3987)] and (2) when an IRI is serving as an "id" value, it *MUST NOT* be so mapped.
 
 Relative IRI (and URL) references *SHOULD NOT* be used within an Activity Streams 2.0 document due to the fact that many JSON parser implementations are not capable of reliably preserving the base context necessary to properly resolve relative references.
-2.3 Date and Times
+
+### 2.3 Date and Times
 
 All properties with date and time values *MUST* conform to the "date-time" production in [[RFC3339](https://www.w3.org/TR/activitystreams-core/#bib-RFC3339)] with the one exception that seconds *MAY* be omitted. An uppercase "T" character *MUST* be used to separate date and time, and an uppercase "Z" character *MUST* be used in the absence of a numeric time zone offset.
 
@@ -511,7 +512,7 @@ Figure 8 An Object that is both a <code>Place</code> and a <code>gr:Location</co
 >}
 >```
 
-Certain properties defined by some External Vocabularies can overlap or duplicate those defined by the Activity Vocabulary. Where such overlap exists, for the sake of consistent interoperability, implementations MUST favor the use of properties defined by the Activity Vocabulary.
+Certain properties defined by some External Vocabularies can overlap or duplicate those defined by the Activity Vocabulary. Where such overlap exists, for the sake of consistent interoperability, implementations *MUST* favor the use of properties defined by the Activity Vocabulary.
 
 ### 4.1.1 Text representations of Object types
 
@@ -553,7 +554,7 @@ Figure 10 A note with an automatically-generated summary
 >}
 >```
 
-The `name` and `summary` *MAY* be absent, *MAY* lack explicit values in the end user's current language, and MAY be longer than appropriate for use as a text representation of the Object in the current language context. Consumer implementations *SHOULD* have fallback strategies for text representation of Objects in these cases.
+The `name` and `summary` *MAY* be absent, *MAY* lack explicit values in the end user's current language, and *MAY* be longer than appropriate for use as a text representation of the Object in the current language context. Consumer implementations *SHOULD* have fallback strategies for text representation of Objects in these cases.
 
 ### 4.2 Link
 
@@ -939,9 +940,7 @@ Figure 23 A single name String value without language information:
 Figure 24 Multiple, language-specific values:
 </em></div>
 
-><div align="center">
->Example 22
-></div>
+><div align="center"> Example 22 </div>
 >
 >```json
 >{
@@ -955,7 +954,7 @@ Figure 24 Multiple, language-specific values:
 >}
 >```
 
-Every key in the object form MUST be a well-formed [[BCP47](https://www.w3.org/TR/activitystreams-core/#bib-BCP47)] Language-Tag. The associated values MUST be strings.
+Every key in the object form *MUST* be a well-formed [[BCP47](https://www.w3.org/TR/activitystreams-core/#bib-BCP47)] Language-Tag. The associated values *MUST* be strings.
 
 The [Activity Vocabulary](https://www.w3.org/TR/activitystreams-vocabulary/) defines three properties that use natural language values:
  [name](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-name),
@@ -969,9 +968,7 @@ The special language tag "`und`" can be used within the object form to explicitl
 Figure 25 Using the <code>"und"</code> language tag:
 </em></div>
 
-><div align="center">
->Example 23
-></div>
+><div align="center"> Example 23 </div>
 >
 >```json
 >{
@@ -1057,7 +1054,7 @@ Figure 27 GeoJSON Point Coordinates:
 >```
 
 <div align="center"><em>
-Figure 28 The Equivalent Place alternative:
+Figure 28 The Equivalent <code>Place</code> alternative:
 </em></div>
 
 ><div align="center"> Example 26 </div>
@@ -1181,6 +1178,7 @@ Figure 33 The reserialized compacted form:
 
 ><div align="center"> Example 31 </div>
 >
+>```json
 >{
 >  "@context": "https://www.w3.org/ns/activitystreams",
 >  "type": "Note",
@@ -1188,6 +1186,7 @@ Figure 33 The reserialized compacted form:
 >  "http://example.org/foo": 123,
 >  "bar": 321
 >}
+>```
 
 While this is close to the original, the use of fully expanded URI label for the `foo` property is not ideal. To ensure that the reserialized object is serialized correctly, implementations that perform JSON-LD expansion of received documents *SHOULD* preserve the original `@context` used when performing the JSON-LD expansion, then reuse that when reserializing the object into the JSON-LD compacted form.
 
@@ -1232,7 +1231,7 @@ This specification registers the `application/activity+json` MIME Media Type spe
 Type name: | application
 Subtype name: | activity+json
 Required parameters: | None
-Optional parameters: | profile: The profile parameter for the application/activity+json media type allows one or more profile URIs to be specified. These profile URIs have the identifier semantics defined in [[RFC6906](https://www.w3.org/TR/activitystreams-core/#bib-RFC6906)]. The "profile" media type parameter *MUST* be quoted. It contains a non-empty list of space-separated URIs (the profile URIs). </br> * profile-param = <code>"profile="</code> profile-value </br> profile-value = <"> profile-URI 0*( 1*SP profile-URI ) <"> </br> * profile-URI   = URI </br> The "URI" in the above grammar refers to the "URI" as defined in Section 3 of [[RFC3986](https://www.w3.org/TR/activitystreams-core/#bib-RFC3986)].
+Optional parameters: | profile: The profile parameter for the application/activity+json media type allows one or more profile URIs to be specified. These profile URIs have the identifier semantics defined in [[RFC6906](https://www.w3.org/TR/activitystreams-core/#bib-RFC6906)]. The "profile" media type parameter *MUST* be quoted. It contains a non-empty list of space-separated URIs (the profile URIs). </br></br> profile-param = <code>"profile="</code> profile-value </br> profile-value = <"> profile-URI 0*( 1*SP profile-URI ) <"> </br> profile-URI   = URI </br></br> The "URI" in the above grammar refers to the "URI" as defined in Section 3 of [[RFC3986](https://www.w3.org/TR/activitystreams-core/#bib-RFC3986)].
 Encoding considerations: | Resources that use the "`application/activity+json`" Media Type are required to conform to all of the requirements for the "`application/json`" Media Type and are therefore subject to the same encoding considerations specified in Section 11 of [[RFC7159](https://www.w3.org/TR/activitystreams-core/#bib-RFC3986)].
 Security considerations: | As defined in this specification.
 Contact:  | James M Snell <jasnell@gmail.com>
@@ -1317,7 +1316,7 @@ Specifically:
 6. Activity Streams 1.0 uses the `title` property which has been dropped from Activity Streams 2.0. Implementations processing Activity Streams 1.0 documents as Activity Streams 2.0 ought to treat instances of the `title` property as an extension.
 7. This document redefines the [content](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-content) and [summary](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-summary) properties as natural language values which means their values can be expressed as either a string or an object mapping language tags to string values. In the 1.0 syntax, these are expressed solely as String values. Because the 1.0 values are a valid subset allowed by this specification, implementations are not required to take any specific action to continue supporting those values.
 8. This document redefines a large number of common properties defined originally as Objects in 1.0 as either [Objects](https://www.w3.org/TR/activitystreams-core/#asobject) or [Links](https://www.w3.org/TR/activitystreams-core/#dfn-link). The JSON-LD serialization allows such property values to be expressed as either an IRI String, an JSON object, or an Array of IRI Strings and JSON objects. Because the 1.0 values are a valid subset allowed by this specification, existing implementations are not required to take any specific action to continue supporting those values.
-9. This specification deprecates the `upstreamDuplicates` and `downstreamDuplicates` properties defined by Activity Streams 1.0 and does not provide a replacement. This is due largely to lack of any reasonable implementation evidence. While the `upstreamDuplicates` and `downstreamDuplicates` properties MAY continue to be used, implementations *SHOULD* avoid them.
+9. This specification deprecates the `upstreamDuplicates` and `downstreamDuplicates` properties defined by Activity Streams 1.0 and does not provide a replacement. This is due largely to lack of any reasonable implementation evidence. While the `upstreamDuplicates` and `downstreamDuplicates` properties *MAY* continue to be used, implementations *SHOULD* avoid them.
 10. In Activity Streams 1.0, the "`post`" verb was defined to describe the action of both creating an object and "posting" or uploading it to a service. This specification replaces the "`post`" verb with separate [Create](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-create) and [Add](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-add) Activity types. When processing Activity Streams 1.0 documents and converting those into 2.0, implementations *SHOULD* treat instances of the " `post`" verb as equivalent to [Create](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-create) if there is _no `target` property specified_; and equivalent to [Add](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-add) if there is a *target* property specified.
 
 By following these guidelines, all JSON Activity Streams 1.0 serializations can be processed successfully by 2.0 implementations.
